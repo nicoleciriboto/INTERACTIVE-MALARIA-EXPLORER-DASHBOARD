@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000',  // Flask endpoint base
+  baseURL: 'https://interactive-malaria-explorer-dashboard-1.onrender.com/',  // Flask endpoint base
 });
 
 export default API;
