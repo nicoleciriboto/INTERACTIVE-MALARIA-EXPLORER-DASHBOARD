@@ -23,6 +23,13 @@ const TopCountriesBarChart = ({ year }) => {
       .catch((err) => console.error('Error fetching top countries:', err));
   }, [year]);
 
+  // Adjust pie radius based on screen width
+  const getOuterRadius = () => {
+    if (window.innerWidth < 500) return 80;
+    if (window.innerWidth < 768) return 100;
+    return 120;
+  };
+
   return (
     <div className="chart-container">
       <div className="chart-header">
@@ -34,11 +41,11 @@ const TopCountriesBarChart = ({ year }) => {
       </div>
 
       {chartData.length > 0 ? (
-        <ResponsiveContainer width="100%" height={500}>
+        <ResponsiveContainer width="100%" height={500} minHeight={300}>
           {chartType === 'bar' ? (
             <BarChart
               data={chartData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 80 }}
+              margin={{ top: 20, right: 30, left: 10, bottom: 80 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
@@ -59,24 +66,26 @@ const TopCountriesBarChart = ({ year }) => {
               />
             </BarChart>
           ) : (
-            <PieChart>
-              <Pie
-                data={chartData}
-                dataKey="Malaria cases reported"
-                nameKey="Country Name"
-                cx="50%"
-                cy="50%"
-                outerRadius={120}
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                labelLine={false}
-              >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend layout="vertical" align="right" verticalAlign="middle" />
-            </PieChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="Malaria cases reported"
+                  nameKey="Country Name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={getOuterRadius()}
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                  labelLine={false}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend layout="vertical" align="right" verticalAlign="middle" />
+              </PieChart>
+            </ResponsiveContainer>
           )}
         </ResponsiveContainer>
       ) : (

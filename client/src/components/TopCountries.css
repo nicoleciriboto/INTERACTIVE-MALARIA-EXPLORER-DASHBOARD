@@ -7,6 +7,7 @@
   margin-bottom: 30px;
   transition: box-shadow 0.3s ease;
   height: 80vh;
+  overflow-x: auto;
 }
 
 .chart-container:hover {
@@ -44,6 +45,24 @@
   border-color: #1b4332;
 }
 
+/* Tablet (≤992px) */
+@media (max-width: 992px) {
+  .chart-container {
+    height: auto;
+    padding: 16px;
+  }
+
+  .chart-title {
+    font-size: 1.35rem;
+  }
+
+  .chart-select {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}
+
+/* Mobile (≤768px) */
 @media (max-width: 768px) {
   .chart-header {
     flex-direction: column;
@@ -52,10 +71,17 @@
 
   .chart-title {
     text-align: left;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
 
   .chart-select {
     width: 100%;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+
+  .chart-container {
+    height: auto;
+    padding: 16px;
   }
 }
