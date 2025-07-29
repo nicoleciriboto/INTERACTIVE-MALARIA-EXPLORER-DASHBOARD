@@ -8,12 +8,11 @@ const Sidebar = ({ onFilterChange }) => {
 
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
+  const [isOpen, setIsOpen] = useState(true); // Toggle sidebar
 
   useEffect(() => {
-    // Fetch metadata from Flask API
     API.get('/metadata')
       .then((res) => {
-        console.log('Metadata response:', res.data);
         setCountries(res.data.countries || []);
         setYears(res.data.years || []);
       })
@@ -22,20 +21,27 @@ const Sidebar = ({ onFilterChange }) => {
       });
   }, []);
 
-  // Inform parent component when filters change
   useEffect(() => {
     onFilterChange({ country: selectedCountry, year: selectedYear });
   }, [selectedCountry, selectedYear, onFilterChange]);
 
   return (
-    <div className="sidebar">
-      <h2>Filters</h2>
-      
+    <>
+      {/* Toggle button for small screens */}
+      <button
+        className="sidebar-toggle"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? 'Close Filters' : 'Show Filters'}
+      </button>
+
+      <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
+        <h2>Filters</h2>
+
         <label htmlFor="country-select">Country</label>
         <select
           id="country-select"
           className="custom-select"
-          style={{ animationDelay: '0.1s' }}
           value={selectedCountry}
           onChange={(e) => setSelectedCountry(e.target.value)}
         >
@@ -50,7 +56,6 @@ const Sidebar = ({ onFilterChange }) => {
         <select
           id="year-select"
           className="custom-select"
-          style={{ animationDelay: '0.3s' }}
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
         >
@@ -70,7 +75,8 @@ const Sidebar = ({ onFilterChange }) => {
         >
           Reset Filters
         </button>
-    </div>
+      </div>
+    </>
   );
 };
 

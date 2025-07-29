@@ -12,6 +12,7 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#A28FD0', '#FF6666'
 const TopCountriesBarChart = ({ year }) => {
   const [chartData, setChartData] = useState([]);
   const [chartType, setChartType] = useState('bar');
+  const [showLabels, setShowLabels] = useState(true);
 
   useEffect(() => {
     if (!year) return;
@@ -23,9 +24,20 @@ const TopCountriesBarChart = ({ year }) => {
       .catch((err) => console.error('Error fetching top countries:', err));
   }, [year]);
 
+  useEffect(() => {
+  const handleResize = () => {
+    const width = window.innerWidth;
+    setShowLabels(width >= 768); // Only show labels on tablets and above
+  };
+
+  handleResize(); // Initial check
+  window.addEventListener('resize', handleResize);
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
+
   // Adjust pie radius based on screen width
   const getOuterRadius = () => {
-    if (window.innerWidth < 500) return 80;
+    if (window.innerWidth < 500) return 60;
     if (window.innerWidth < 768) return 100;
     return 120;
   };
@@ -45,16 +57,16 @@ const TopCountriesBarChart = ({ year }) => {
           {chartType === 'bar' ? (
             <BarChart
               data={chartData}
-              margin={{ top: 20, right: 30, left: 10, bottom: 80 }}
+              margin={{ top: 50, right: 10, left: 15, bottom: 100 }}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+             
               <XAxis
                 dataKey="Country Name"
-                angle={-45}
+                angle={-50}
                 textAnchor="end"
                 interval={0}
                 height={80}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 10 }}
               />
               <YAxis tick={{ fontSize: 12 }} />
               <Tooltip />
@@ -75,8 +87,8 @@ const TopCountriesBarChart = ({ year }) => {
                   cx="50%"
                   cy="50%"
                   outerRadius={getOuterRadius()}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
-                  labelLine={false}
+                   label={showLabels ? ({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%` : false}
+                   labelLine={showLabels}
                 >
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

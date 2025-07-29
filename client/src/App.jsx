@@ -5,6 +5,7 @@ import Summary from './components/Summary';
 import TopCountriesBar from './components/TopCountriesBar'; 
 import ChoroplethMap from './components/ChoroplethMap';  
 import SummaryTable from './components/SummaryTable';
+import Footer from './components/Footer';
 
 function App() {
   const [data, setData] = useState([]);
@@ -31,7 +32,7 @@ function App() {
         <TopCountriesBar year={filters.year} />
         <ChoroplethMap year={filters.year} />
         <SummaryTable filters={filters} />
-
+        <Footer />
       </div>
     </div>
   );

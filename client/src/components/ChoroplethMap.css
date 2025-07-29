@@ -5,25 +5,24 @@
   overflow: hidden;
   transition: box-shadow 0.3s ease;
   padding: 24px;
+  flex: 2;
 }
 
-.map-title{
+.map-title {
   font-size: 1.5rem;
   font-weight: 600;
   color: #333;
-  flex-grow: 1;
   text-align: left;
+  margin-bottom: 16px;
 }
 
 .map-legend-wrapper {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
   gap: 20px;
   padding: 20px;
-}
-
-.map-container {
-  flex: 2;
+  flex-wrap: wrap;
 }
 
 .map-legend {
@@ -33,6 +32,7 @@
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   font-size: 14px;
+  min-width: 200px;
 }
 
 .map-legend h4 {
@@ -42,6 +42,7 @@
 .map-legend ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .map-legend li {
@@ -56,5 +57,31 @@
   margin-right: 10px;
   border-radius: 3px;
   border: 1px solid #ccc;
+}
+
+/* --------------------- */
+/* RESPONSIVENESS */
+/* --------------------- */
+
+@media (max-width: 767px) {
+  .map-legend-wrapper {
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    margin-left: -15px;
+  }
+
+  .map-container {
+    padding: 16px;
+    width: 95%;
+  }
+
+  .map-title {
+    font-size: 1.25rem;
+  }
+
+  .map-legend {
+    width: 50%;
+  }
 }
 
