@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Tooltip } from 'react-leaflet';
+import { motion, useInView } from 'framer-motion';
 import API from '../api';
 import './ChoroplethMap.css';
 
@@ -36,6 +37,10 @@ const ChoroplethMap = ({ year }) => {
   const [malariaData, setMalariaData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Scroll trigger ref
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
 
   useEffect(() => {
     fetch('/africa.geojson')
@@ -106,7 +111,13 @@ const ChoroplethMap = ({ year }) => {
   };
 
   return (
-    <div className="map-legend-wrapper">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+      className="map-legend-wrapper"
+    >
       <div className="map-container">
         <h2 className='map-title'>Malaria Case Intensity by Country ({year})</h2>
         {loading && <p>Loading map and data...</p>}
@@ -123,7 +134,7 @@ const ChoroplethMap = ({ year }) => {
       </div>
 
       <Legend />
-    </div>
+    </motion.div>
   );
 };
 

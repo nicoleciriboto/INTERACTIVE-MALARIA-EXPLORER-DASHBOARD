@@ -8,7 +8,20 @@ const Sidebar = ({ onFilterChange }) => {
 
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
-  const [isOpen, setIsOpen] = useState(true); // Toggle sidebar
+  const [isOpen, setIsOpen] = useState(false); // default to false initially
+
+  // sidebar open/closed based on screen width on first render
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsOpen(true); // open by default on desktop
+      } else {
+        setIsOpen(false); // closed by default on mobile
+      }
+    };
+
+    handleResize(); // run once on mount
+  }, []);
 
   useEffect(() => {
     API.get('/metadata')
@@ -27,11 +40,7 @@ const Sidebar = ({ onFilterChange }) => {
 
   return (
     <>
-      {/* Toggle button for small screens */}
-      <button
-        className="sidebar-toggle"
-        onClick={() => setIsOpen(!isOpen)}
-      >
+      <button className="sidebar-toggle" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? 'Close Filters' : 'Show Filters'}
       </button>
 

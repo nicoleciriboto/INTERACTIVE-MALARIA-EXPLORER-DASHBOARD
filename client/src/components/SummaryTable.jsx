@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import API from '../api';
 import './SummaryTable.css';
+import { motion, useInView } from 'framer-motion';
 
 function SummaryTable({ filters }) {
   const [summaryData, setSummaryData] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const ref = useRef(null);
+  // triggers animation when near viewport
+  const isInView = useInView(ref, { once: true, margin: '-100px' }); 
 
   useEffect(() => {
     if (!filters || !filters.country || filters.country === 'All') {
@@ -34,7 +39,13 @@ function SummaryTable({ filters }) {
   }, [filters.country]);
 
   return (
-    <div className="summary-table-container">
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+      className="summary-table-container"
+    >
       <h2>Country Summary (2007 - 2017)</h2>
       <table className="summary-table">
         <thead>
@@ -64,7 +75,7 @@ function SummaryTable({ filters }) {
           )}
         </tbody>
       </table>
-    </div>
+    </motion.div>
   );
 }
 

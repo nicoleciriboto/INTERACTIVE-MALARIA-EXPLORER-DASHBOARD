@@ -4,6 +4,7 @@ import {
   XAxis, YAxis, Tooltip, Cell,
   CartesianGrid, ResponsiveContainer, Legend
 } from 'recharts';
+import { motion } from 'framer-motion';
 import API from '../api';
 import './TopCountries.css';
 
@@ -43,7 +44,11 @@ const TopCountriesBarChart = ({ year }) => {
   };
 
   return (
-    <div className="chart-container">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+      className="chart-container">
       <div className="chart-header">
         <h3 className="chart-title">Top 10 Countries by Malaria Cases ({year})</h3>
         <select value={chartType} onChange={(e) => setChartType(e.target.value)} className="chart-select">
@@ -103,7 +108,7 @@ const TopCountriesBarChart = ({ year }) => {
       ) : (
         <p>No data available for this year.</p>
       )}
-    </div>
+    </motion.div>
   );
 };
 
