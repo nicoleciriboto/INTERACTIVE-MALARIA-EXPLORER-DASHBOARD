@@ -39,6 +39,7 @@ return (
       <div>
         <h4>Total Malaria Cases</h4>
         <p>{summary["Total Cases"].toLocaleString()}</p>
+        <p className='filter-info'>Across selected filters</p>
       </div>
     </motion.div>
 
@@ -53,6 +54,7 @@ return (
       <div>
         <h4>Total Incidence</h4>
         <p>{summary["Total Incidences"].toLocaleString()} per 1000</p>
+        <p className='filter-info'>Per population</p>
       </div>
     </motion.div>
 
@@ -68,6 +70,7 @@ return (
       <div>
         <h4>% Using Safe Sanitation</h4>
         <p>{summary["Total % using safe sanitation services"].toFixed(2)}%</p>
+        <p className='filter-info'>People using safe sanitation</p>
       </div>
     </motion.div>
   </motion.div>

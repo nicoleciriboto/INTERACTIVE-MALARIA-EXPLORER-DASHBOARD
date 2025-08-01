@@ -67,6 +67,14 @@ body {
   box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
+.sidebar option{
+  font-family: "Arial";
+  background-color: #eff2f5;
+  color: #333;
+  font-size: 12px;
+ cursor: pointer;
+}
+
 @keyframes fadeSlideIn {
   from {
     opacity: 0;
@@ -101,8 +109,7 @@ h1{
   color: #333;
 }
 
-.app-p{
-  margin-bottom: 30px;
+.app-p {
   color: #333;
   font-weight: 500;
 }
@@ -141,6 +148,13 @@ h1{
   margin: 4px 0 0;
   font-size: 22px;
   font-weight: bold;
+}
+
+.card p.filter-info {
+  font-size: 14px;
+  color: #fff;
+  margin-top: 4px;
+  font-weight: 400;
 }
 
 /* Color themes */

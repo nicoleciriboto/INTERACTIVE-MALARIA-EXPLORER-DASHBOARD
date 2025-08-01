@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 import API from '../api';
 import '../index.css';
 
@@ -6,37 +7,71 @@ const Sidebar = ({ onFilterChange }) => {
   const [countries, setCountries] = useState([]);
   const [years, setYears] = useState([]);
 
-  const [selectedCountry, setSelectedCountry] = useState('All');
-  const [selectedYear, setSelectedYear] = useState('All');
-  const [isOpen, setIsOpen] = useState(false); // default to false initially
+  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // sidebar open/closed based on screen width on first render
+  // Show sidebar by default on desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768) {
-        setIsOpen(true); // open by default on desktop
+        setIsOpen(true);
       } else {
-        setIsOpen(false); // closed by default on mobile
+        setIsOpen(false);
       }
     };
 
-    handleResize(); // run once on mount
+    handleResize();
   }, []);
 
+  // Fetch country and year options
   useEffect(() => {
     API.get('/metadata')
       .then((res) => {
-        setCountries(res.data.countries || []);
-        setYears(res.data.years || []);
+        const countryOptions = [{ value: 'All', label: 'All' }, ...res.data.countries.map(c => ({ value: c, label: c }))];
+        const yearOptions = [{ value: 'All', label: 'All' }, ...res.data.years.map(y => ({ value: y, label: y }))];
+        setCountries(countryOptions);
+        setYears(yearOptions);
       })
       .catch((err) => {
         console.error('Failed to fetch metadata:', err);
       });
   }, []);
 
+  // Notify parent of changes
   useEffect(() => {
-    onFilterChange({ country: selectedCountry, year: selectedYear });
+    onFilterChange({
+      country: selectedCountry?.value || 'All',
+      year: selectedYear?.value || 'All',
+    });
   }, [selectedCountry, selectedYear, onFilterChange]);
+
+  const customStyles = {
+    control: (base, state) => ({
+      ...base,
+      borderRadius: '8px',
+      padding: '2px 4px',
+      backgroundColor: '#e6f0fa',
+      borderColor: state.isFocused ? '#80bfff' : '#ccc',
+      boxShadow: state.isFocused ? '0 0 0 2px #80bfff50' : 'none',
+      '&:hover': {
+        borderColor: '#80bfff',
+      },
+    }),
+    menu: (base) => ({
+      ...base,
+      borderRadius: '8px',
+      backgroundColor: '#f0f8ff',
+      zIndex: 9999,
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused ? '#d0e8ff' : 'white',
+      color: '#333',
+      cursor: 'pointer',
+      padding: '10px',
+    }),
+  };
 
   return (
     <>
@@ -48,37 +83,31 @@ const Sidebar = ({ onFilterChange }) => {
         <h2>Filters</h2>
 
         <label htmlFor="country-select">Country</label>
-        <select
+        <Select
           id="country-select"
-          className="custom-select"
+          options={countries}
           value={selectedCountry}
-          onChange={(e) => setSelectedCountry(e.target.value)}
-        >
-          {countries.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedCountry}
+          styles={customStyles}
+          placeholder="Select Country"
+          isSearchable={true}
+        />
 
         <label htmlFor="year-select">Year</label>
-        <select
+        <Select
           id="year-select"
-          className="custom-select"
+          options={years}
           value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-        >
-          {years.map((y) => (
-            <option key={y} value={y}>
-              {y}
-            </option>
-          ))}
-        </select>
+          onChange={setSelectedYear}
+          styles={customStyles}
+          placeholder="Select Year"
+          isSearchable={false}
+        />
 
         <button
           onClick={() => {
-            setSelectedCountry('All');
-            setSelectedYear('All');
+            setSelectedCountry(null);
+            setSelectedYear(null);
           }}
           className="reset-button"
         >

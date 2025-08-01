@@ -18,7 +18,7 @@ function SummaryTable({ filters }) {
     }
 
     setLoading(true);
-    API.get('/data', {
+    API.get('/table', {
       params: {
         country: filters.country,
         startYear: 2007,
