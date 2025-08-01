@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, request, jsonify # type: ignore
+from flask_cors import CORS # type: ignore
 import os
-import pandas as pd
+import pandas as pd # type: ignore
 
 app = Flask(__name__)
 cors = CORS(app, origins='*')
@@ -167,7 +167,7 @@ def get_map_data():
     result = country_cases.to_dict(orient='records')
     return jsonify(result)
 
-@app.route('/data')
+@app.route('/table', methods=['GET'])
 def get_country_summary():
     country = request.args.get('country')
     start_year = int(request.args.get('startYear', 2007))
