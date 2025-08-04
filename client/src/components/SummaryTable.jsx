@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './SummaryTable.css';
 import { motion, useInView } from 'framer-motion';
+import html2canvas from 'html2canvas'
 
 function SummaryTable({ filters }) {
   const [summaryData, setSummaryData] = useState([]);
@@ -18,7 +19,10 @@ function SummaryTable({ filters }) {
       setLoading(true);
       try {
         const response = await fetch(`https://interactive-malaria-explorer-dashboard-1.onrender.com/table?country=${selectedCountry}&startYear=${startYear}&endYear=${endYear}`);
-        const data = await response.json();
+        let text = await response.text();
+
+        text=text.replace(/\bNaN\b/g, 'null'); // Replace 'NaN' with 'null' for JSON parsing
+        const data = JSON.parse(text);
         console.log("Fetched data:", data);
 
         if (!Array.isArray(data)) {
@@ -38,13 +42,30 @@ function SummaryTable({ filters }) {
     fetchData();
   }, [selectedCountry, startYear, endYear]);
 
+  const handleExportImage = () => {
+    const tableElement = ref.current;
+    if (tableElement) {
+      html2canvas(tableElement).then(canvas => {
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL();
+        link.download = 'summary_table.png';
+        link.click();
+      });
+    }
+  };
+
   const normalize = Array.isArray(summaryData)
     ? summaryData.map(row => ({
         country: row['Country Name'],
         year: row['Year'],
         cases: row['Malaria cases reported'],
-        nest: row['Use of insecticide-treated bed nets (% of under-5 population'],
-        water: row['People using safely managed drinking water services (% of population)'],
+        urbanPopGrowth: typeof row['Urban population growth (annual %)'] === 'number'
+        ? row['Urban population growth (annual %)']
+        : (row['Urban population growth (annual %)'] ? Number(row['Urban population growth (annual %)']) : null),
+         ruralPopPercent: typeof row['Rural population (% of total population)'] === 'number'
+        ? row['Rural population (% of total population)']
+        : (row['Rural population (% of total population)'] ? Number(row['Rural population (% of total population)']) : null),
+
       }))
     : [];
 
@@ -57,14 +78,16 @@ function SummaryTable({ filters }) {
       className="summary-table-container"
     >
       <h2>Country Summary (2007 - 2017)</h2>
+      <button onClick={handleExportImage} className="export-button">
+        Export as Image</button>
       <table className="summary-table">
         <thead>
           <tr>
             <th>Country</th>
             <th>Year</th>
             <th>Malaria Cases</th>
-            <th>Bed Net Usage (%)</th>
-            <th>Safe Water Usage (%)</th>
+            <th>Urban Population (%)</th>
+            <th>Rural Population (%)</th>
           </tr>
         </thead>
         <tbody>
@@ -76,8 +99,8 @@ function SummaryTable({ filters }) {
                 <td>{row.country}</td>
                 <td>{row.year}</td>
                 <td>{row.cases?.toLocaleString() || '0'}</td>
-                <td>{row.nest || 'N/A'}</td>
-                <td>{row.water || 'N/A'}</td>
+                <td>{row.urbanPopGrowth !== null && row.urbanPopGrowth !== undefined && row.urbanPopGrowth !== '' ? Number(row.urbanPopGrowth).toFixed(2) : 'N/A'}</td>
+                <td>{row.ruralPopPercent !== null && row.ruralPopPercent !== undefined && row.ruralPopPercent !== '' ? Number(row.ruralPopPercent).toFixed(2) : 'N/A'}</td>
               </tr>
             ))
           ) : (
