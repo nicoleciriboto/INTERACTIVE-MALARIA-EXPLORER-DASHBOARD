@@ -179,7 +179,11 @@ def get_country_summary():
         (df['Year'] <= end_year)
     ]
 
-    return jsonify(filtered_df.to_dict(orient='records'))
+    # Replace NaN with None so it's valid JSON
+    clean_data = filtered_df.where(pd.notnull(filtered_df), None)
+
+    return jsonify(clean_data.to_dict(orient='records'))
+
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 10000))

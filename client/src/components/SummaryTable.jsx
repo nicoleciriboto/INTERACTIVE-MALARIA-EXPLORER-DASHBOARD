@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import API from '../api';
 import './SummaryTable.css';
 import { motion, useInView } from 'framer-motion';
 
@@ -8,60 +7,46 @@ function SummaryTable({ filters }) {
   const [loading, setLoading] = useState(false);
 
   const ref = useRef(null);
-  // triggers animation when near viewport
   const isInView = useInView(ref, { once: true, margin: '-100px' }); 
 
+  const selectedCountry = filters.country;
+  const startYear = 2007;
+  const endYear = 2017;
+
   useEffect(() => {
-    // if (!filters || !filters.country || filters.country === 'All') {
-    //   setSummaryData([]);
-    //   return;
-    // }
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`https://interactive-malaria-explorer-dashboard-1.onrender.com/table?country=${selectedCountry}&startYear=${startYear}&endYear=${endYear}`);
+        const data = await response.json();
+        console.log("Fetched data:", data);
 
-    setLoading(true);
-    API.get('/table', {
-      params: {
-        country: filters.country,
-        startYear: 2007,
-        endYear: 2017,
-      },
-    })
-      .then(res => {
-        console.log("Summary API response:", res.data);
-        console.log('Typeofres:', typeof res.data);
-        console.log('isAnArray:', Array.isArray(res.data));
-
-        let dataset = []
-        if (typeof res.data === 'string') {
-          const cleanedString = res.dataset.replace(/:\s*NaN/g,': null')
-          dataset = JSON.parse(cleanedString);
-          console.log('Dataset:', dataset)
+        if (!Array.isArray(data)) {
+          console.error("Expected array but got:", typeof data);
+          setSummaryData([]);
         } else {
-          dataset = res.data;
+          setSummaryData(data);
         }
-        setSummaryData(dataset);
-      })
-      .catch(err => {
-        console.error('Error fetching summary data:', err);
+      } catch (error) {
+        console.error('Error fetching summary data:', error);
         setSummaryData([]);
-      })
-      .finally(() => {
+      } finally {
         setLoading(false);
-      });
-  }, [filters.country]);
-  // console.log('Summary data:', summaryData);
-  // console.log('Summary data length:', summaryData.length);
+      }
+    };
 
-  const normalize = Array.isArray(summaryData) ? summaryData.map(row => ({
-    country: row['Country Name'],
-    year: row['Year'],
-    cases: row['Malaria cases reported'],
-    nest: row['Use of insecticide-treated bed nets (% of under-5 population'],
-    water: row['People using safely managed drinking water services (% of population)'],
-  })) : [];
+    fetchData();
+  }, [selectedCountry, startYear, endYear]);
 
-  
-
-  console.log('Normalize:', normalize)
+  const normalize = Array.isArray(summaryData)
+    ? summaryData.map(row => ({
+        country: row['Country Name'],
+        year: row['Year'],
+        cases: row['Malaria cases reported'],
+        nest: row['Use of insecticide-treated bed nets (% of under-5 population'],
+        water: row['People using safely managed drinking water services (% of population)'],
+      }))
+    : [];
 
   return (
     <motion.div
@@ -85,8 +70,7 @@ function SummaryTable({ filters }) {
         <tbody>
           {loading ? (
             <tr><td colSpan="5">Loading...</td></tr>
-          ) : summaryData &&  
-          summaryData.length > 0 ? (
+          ) : normalize.length > 0 ? (
             normalize.map((row, index) => (
               <tr key={index}>
                 <td>{row.country}</td>
