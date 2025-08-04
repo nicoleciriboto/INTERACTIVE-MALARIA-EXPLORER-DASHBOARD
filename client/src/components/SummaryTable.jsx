@@ -12,10 +12,10 @@ function SummaryTable({ filters }) {
   const isInView = useInView(ref, { once: true, margin: '-100px' }); 
 
   useEffect(() => {
-    if (!filters || !filters.country || filters.country === 'All') {
-      setSummaryData([]);
-      return;
-    }
+    // if (!filters || !filters.country || filters.country === 'All') {
+    //   setSummaryData([]);
+    //   return;
+    // }
 
     setLoading(true);
     API.get('/table', {
@@ -27,7 +27,18 @@ function SummaryTable({ filters }) {
     })
       .then(res => {
         console.log("Summary API response:", res.data);
-        setSummaryData(res.data);
+        console.log('Typeofres:', typeof res.data);
+        console.log('isAnArray:', Array.isArray(res.data));
+
+        let dataset = []
+        if (typeof res.data === 'string') {
+          const cleanedString = res.dataset.replace(/:\s*NaN/g,': null')
+          dataset = JSON.parse(cleanedString);
+          console.log('Dataset:', dataset)
+        } else {
+          dataset = res.data;
+        }
+        setSummaryData(dataset);
       })
       .catch(err => {
         console.error('Error fetching summary data:', err);
@@ -37,6 +48,20 @@ function SummaryTable({ filters }) {
         setLoading(false);
       });
   }, [filters.country]);
+  // console.log('Summary data:', summaryData);
+  // console.log('Summary data length:', summaryData.length);
+
+  const normalize = Array.isArray(summaryData) ? summaryData.map(row => ({
+    country: row['Country Name'],
+    year: row['Year'],
+    cases: row['Malaria cases reported'],
+    nest: row['Use of insecticide-treated bed nets (% of under-5 population'],
+    water: row['People using safely managed drinking water services (% of population)'],
+  })) : [];
+
+  
+
+  console.log('Normalize:', normalize)
 
   return (
     <motion.div
@@ -60,14 +85,15 @@ function SummaryTable({ filters }) {
         <tbody>
           {loading ? (
             <tr><td colSpan="5">Loading...</td></tr>
-          ) : Array.isArray(summaryData) && summaryData.length > 0 ? (
-            summaryData.map((row, index) => (
+          ) : summaryData &&  
+          summaryData.length > 0 ? (
+            normalize.map((row, index) => (
               <tr key={index}>
-                <td>{row["Country Name"]}</td>
-                <td>{row["Year"]}</td>
-                <td>{row["Malaria cases reported"]?.toLocaleString() || '0'}</td>
-                <td>{row["Use of insecticide-treated bed nets (% of under-5 population)"] || 'N/A'}</td>
-                <td>{row["People using safely managed drinking water services (% of population)"] || 'N/A'}</td>
+                <td>{row.country}</td>
+                <td>{row.year}</td>
+                <td>{row.cases?.toLocaleString() || '0'}</td>
+                <td>{row.nest || 'N/A'}</td>
+                <td>{row.water || 'N/A'}</td>
               </tr>
             ))
           ) : (
