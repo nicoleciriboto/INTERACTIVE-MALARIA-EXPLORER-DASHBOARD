@@ -1,6 +1,8 @@
 🌍 **Interactive Malaria Explorer Dashboard**
+
 ---------------------------
-An interactive web-based dashboard that visualizes malaria cases and deaths across Africa from 2000 to 2021. The project provides insights into malaria trends using dynamic charts and a choropleth map, helping researchers, policymakers, and the public explore data in an intuitive way.
+
+An interactive web-app dashboard that visualizes malaria cases and deaths across Africa from 2007 to 2017. The project provides insights into malaria trends using dynamic charts and a choropleth map, helping researchers, policymakers, and the public explore data in an intuitive way.
 
 ✨ **Features**
 
@@ -13,7 +15,9 @@ An interactive web-based dashboard that visualizes malaria cases and deaths acro
 🔎 Data Filtering: Select years or countries to explore specific subsets of the dataset.
 
 🎨 Custom Styling: Built with plain CSS for a clean, lightweight design.
+
 -------------------------------------------
+
 🛠️ **Tech Stack**
 
 Frontend: React.js
